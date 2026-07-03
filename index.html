@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>茵茵 - 你的桌面伴侣</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--pk:#ff6b9d;--pk2:#ff9ec4;--pk3:#ff528a;--bl:#89c4f4;--bl2:#b0d8f8;--txt:#3a3a5a;--txt2:#6b6b8d}
+body{
+  font-family:'Microsoft YaHei','PingFang SC','Hiragino Sans GB',sans-serif;
+  background:linear-gradient(135deg,#fff5f8,#f0f8ff,#fff0f5);
+  color:var(--txt);min-height:100vh;overflow-x:hidden;
+}
+
+/* ===== 浮动装饰 ===== */
+.fl{position:fixed;border-radius:50%;opacity:.08;pointer-events:none;z-index:0}
+.fl1{width:280px;height:280px;background:var(--pk);top:8%;left:-4%;animation:flF 18s ease-in-out infinite}
+.fl2{width:200px;height:200px;background:var(--bl);top:35%;right:-3%;animation:flF 18s ease-in-out infinite -6s}
+.fl3{width:180px;height:180px;background:var(--pk2);bottom:20%;left:8%;animation:flF 18s ease-in-out infinite -12s}
+@keyframes flF{0%,100%{transform:translateY(0) rotate(0deg)}33%{transform:translateY(-24px) rotate(90deg)}66%{transform:translateY(16px) rotate(180deg)}}
+
+/* ===== 导航 ===== */
+nav{
+  position:fixed;top:0;left:0;width:100%;z-index:100;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 48px;
+  background:rgba(255,255,255,.72);backdrop-filter:blur(14px);
+  transition:all .3s;
+}
+nav.s{border-bottom:1px solid rgba(255,107,157,.1)}
+.logo{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:700;color:var(--pk3);text-decoration:none}
+.logo span{font-size:24px}
+.nav-links{display:flex;gap:28px;list-style:none}
+.nav-links a{
+  text-decoration:none;color:var(--txt2);font-size:13px;font-weight:500;
+  transition:color .3s;position:relative
+}
+.nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:2px;background:var(--pk);transition:width .3s;border-radius:1px}
+.nav-links a:hover{color:var(--pk3)}
+.nav-links a:hover::after{width:100%}
+.dl-btn{
+  background:linear-gradient(135deg,var(--pk),var(--pk3));color:#fff;padding:8px 20px;
+  border-radius:20px;font-size:13px;font-weight:600;text-decoration:none;
+  transition:all .3s;box-shadow:0 4px 16px rgba(255,107,157,.25)
+}
+.dl-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(255,107,157,.35)}
+
+/* ===== Hero ===== */
+.hero{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:90px 48px 50px;position:relative;
+}
+.hero-inner{max-width:1050px;width:100%;display:flex;align-items:center;gap:50px}
+.hero-text{flex:1;z-index:1}
+.badge{
+  display:inline-block;background:linear-gradient(135deg,var(--pk2),var(--pk));
+  color:#fff;padding:5px 16px;border-radius:16px;font-size:12px;font-weight:600;
+  margin-bottom:16px;letter-spacing:1px;
+}
+.hero-title{
+  font-size:48px;line-height:1.2;font-weight:800;
+  background:linear-gradient(135deg,var(--pk3),#c084fc);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:14px;
+}
+.hero-sub{font-size:16px;color:var(--txt2);line-height:1.8;margin-bottom:30px;max-width:440px}
+.btn-grp{display:flex;gap:12px;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 28px;border-radius:50px;font-size:14px;font-weight:600;
+  text-decoration:none;border:none;cursor:pointer;transition:all .3s;
+}
+.btn-pk{
+  background:linear-gradient(135deg,var(--pk),var(--pk3));color:#fff;
+  box-shadow:0 8px 24px rgba(255,107,157,.3);
+}
+.btn-pk:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(255,107,157,.4)}
+.btn-w{
+  background:#fff;color:var(--pk3);border:2px solid var(--pk2);
+}
+.btn-w:hover{background:var(--pk);color:#fff;border-color:var(--pk)}
+
+/* ===== 图片展示 ===== */
+.img-wrap{flex:0 0 360px;position:relative;z-index:1}
+.img-box{
+  width:340px;height:450px;
+  background:linear-gradient(180deg,var(--pk2) 0%,#fff 60%);
+  border-radius:36px 36px 72px 72px;
+  box-shadow:0 12px 48px rgba(255,107,157,.18),inset 0 -16px 32px rgba(255,107,157,.06);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  animation:imgF 5s ease-in-out infinite;
+}
+@keyframes imgF{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.img-box img{max-width:88%;max-height:92%;object-fit:contain;filter:drop-shadow(0 6px 16px rgba(0,0,0,.08))}
+.sp{
+  position:absolute;width:16px;height:16px;
+  background:radial-gradient(circle,var(--pk) 0%,transparent 70%);
+  border-radius:50%;animation:spF 2.4s ease-in-out infinite;
+}
+@keyframes spF{0%,100%{opacity:0;transform:scale(0)}50%{opacity:.7;transform:scale(1)}}
+
+/* ===== 特性 ===== */
+#features{padding:90px 48px;position:relative;z-index:1}
+.sh{text-align:center;margin-bottom:56px}
+.st{
+  display:inline-block;color:var(--pk);font-size:13px;font-weight:700;
+  letter-spacing:3px;margin-bottom:10px;
+}
+.st2{font-size:34px;font-weight:800}
+.st3{font-size:15px;color:var(--txt2);margin-top:10px}
+
+.fg{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:24px;max-width:1050px;margin:0 auto;
+}
+.fc{
+  background:rgba(255,255,255,.8);backdrop-filter:blur(8px);
+  border-radius:20px;padding:30px 26px;
+  border:1px solid rgba(255,107,157,.1);
+  box-shadow:0 6px 28px rgba(255,107,157,.08);
+  transition:all .4s;position:relative;overflow:hidden;
+}
+.fc::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--pk2),var(--pk));
+  transform:scaleX(0);transition:transform .4s;
+}
+.fc:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(255,107,157,.15)}
+.fc:hover::before{transform:scaleX(1)}
+.fc .ico{font-size:38px;display:block;margin-bottom:14px}
+.fc h3{font-size:17px;font-weight:700;margin-bottom:8px}
+.fc p{font-size:13px;color:var(--txt2);line-height:1.7}
+
+/* ===== 互动展示 ===== */
+#interact{padding:90px 48px;background:linear-gradient(180deg,rgba(255,245,248,.6),rgba(240,248,255,.6));position:relative;z-index:1}
+.ig{max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
+.il{list-style:none}
+.il li{
+  display:flex;align-items:center;gap:12px;padding:12px 0;
+  border-bottom:1px solid rgba(200,200,220,.2);font-size:14px;color:var(--txt);
+}
+.il li::before{content:'✦';color:var(--pk);font-size:16px;flex-shrink:0}
+.id{
+  background:rgba(255,255,255,.7);backdrop-filter:blur(8px);
+  border-radius:20px;padding:28px;border:1px solid rgba(255,107,157,.12);
+  box-shadow:0 6px 28px rgba(255,107,157,.08);
+}
+.id .av{
+  width:44px;height:44px;border-radius:50%;overflow:hidden;
+  display:inline-flex;align-items:center;justify-content:center;
+  vertical-align:middle;background:linear-gradient(180deg,var(--pk2),#fff);
+  border:2px solid var(--pk2);margin-right:8px;
+}
+.id .av img{width:100%;height:100%;object-fit:contain}
+.id .nm{font-weight:700;color:var(--pk3)}
+.bb{
+  background:linear-gradient(135deg,#fff8f0,#ffeef5);
+  color:#555;padding:14px 18px;border-radius:14px 14px 14px 4px;
+  font-size:14px;line-height:1.6;margin:14px 0;position:relative;
+  box-shadow:0 4px 16px rgba(255,105,180,.1);
+}
+.bb::before{content:'';position:absolute;top:-7px;left:18px;width:14px;height:14px;background:inherit;border-radius:3px;transform:rotate(45deg)}
+.id .nt{color:var(--txt2);font-size:12px;text-align:center;margin-top:10px}
+
+/* ===== 情绪标签展示 ===== */
+#emotions{padding:80px 48px;position:relative;z-index:1}
+.etg{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;max-width:780px;margin:0 auto}
+.et{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:10px 20px;border-radius:40px;font-size:14px;font-weight:600;
+  border:2px solid;transition:all .3s;
+}
+.et:hover{transform:scale(1.06);box-shadow:0 6px 20px rgba(0,0,0,.08)}
+.et1{color:#ff8c42;background:#fff8f0;border-color:#ffb380}
+.et2{color:#ff5555;background:#fff0f0;border-color:#ff9999}
+.et3{color:#7aa2cc;background:#f5faff;border-color:#aaccee}
+.et4{color:#9966dd;background:#f8f0ff;border-color:#c0a0ee}
+.et5{color:#ff66aa;background:#fff0f8;border-color:#ffaadd}
+.et6{color:#ff89b0;background:#fff5f8;border-color:#ffccee}
+
+/* ===== 下载区 ===== */
+#dl{
+  padding:90px 48px;text-align:center;position:relative;z-index:1;
+  background:linear-gradient(135deg,var(--pk3),var(--pk),#c084fc);
+  color:#fff;
+}
+.dl-t{font-size:38px;font-weight:800;margin-bottom:12px}
+.dl-d{font-size:16px;opacity:.9;margin-bottom:32px}
+.btn-ww{background:#fff;color:var(--pk3);padding:14px 36px;font-size:15px;box-shadow:0 8px 28px rgba(0,0,0,.15)}
+.btn-ww:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(0,0,0,.2)}
+.dl-note{font-size:12px;opacity:.7;margin-top:20px}
+
+/* ===== 页脚 ===== */
+footer{text-align:center;padding:24px;color:var(--txt2);font-size:12px;background:rgba(255,255,255,.5)}
+footer h{color:var(--pk)}
+
+/* ===== 响应式 ===== */
+@media(max-width:780px){
+  nav{padding:10px 20px}
+  .nav-links{display:none}
+  .hero{padding:80px 20px 40px}
+  .hero-inner{flex-direction:column;text-align:center}
+  .hero-title{font-size:32px}
+  .hero-sub{margin:0 auto 24px}
+  .btn-grp{justify-content:center}
+  .img-wrap{flex:0 0 auto}
+  .img-box{width:240px;height:320px}
+  .st2{font-size:26px}
+  #features,#interact{padding:60px 20px}
+  .fg{grid-template-columns:1fr}
+  .ig{grid-template-columns:1fr}
+  .dl-t{font-size:28px}
+}
+</style>
+</head>
+<body>
+
+<!-- 浮动装饰 -->
+<div class="fl fl1"></div>
+<div class="fl fl2"></div>
+<div class="fl fl3"></div>
+
+<!-- 导航 -->
+<nav id="nv">
+  <a href="#" class="logo"><span>🌸</span>茵茵</a>
+  <ul class="nav-links">
+    <li><a href="#features">功能</a></li>
+    <li><a href="#interact">互动</a></li>
+    <li><a href="#emotions">情绪</a></li>
+    <li><a href="#dl" class="dl-btn">⬇ 下载</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <span class="badge">✨ Live2D 桌面伴侣</span>
+      <h1 class="hero-title">你的专属<br>二次元桌宠</h1>
+      <p class="hero-sub">茵茵，一位住在你桌面的可爱少女。她会陪你工作、学习、发呆，用 120 种动作和 AI 对话，让冰冷的屏幕充满温度。</p>
+      <div class="btn-grp">
+        <a href="#dl" class="btn btn-pk">⬇ 免费下载</a>
+        <a href="#features" class="btn btn-w">了解更多 →</a>
+      </div>
+    </div>
+    <div class="img-wrap">
+      <div class="img-box">
+        <img src="yinyin.png?v=2" alt="茵茵 - 桌面宠物">
+        <div class="sp" style="top:14%;left:12%"></div>
+        <div class="sp" style="top:22%;right:15%;animation-delay:.6s"></div>
+        <div class="sp" style="bottom:28%;left:18%;animation-delay:1.2s"></div>
+        <div class="sp" style="top:45%;right:10%;animation-delay:1.8s"></div>
+        <div class="sp" style="bottom:15%;right:22%;animation-delay:.3s"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 功能特性 -->
+<section id="features">
+  <div class="sh">
+    <div class="st">FEATURES</div>
+    <h2 class="st2">满满的心意，都在细节里</h2>
+    <p class="st3">不只是桌面摆件，她是一个有灵魂的数字伙伴</p>
+  </div>
+  <div class="fg">
+    <div class="fc">
+      <span class="ico">💗</span>
+      <h3>六大情绪 · 百种动作</h3>
+      <p>开心、生气、悲伤、疑问、惊讶、害羞 —— 每种情绪 20 个动作，共 120 种精细表现。表情、手势、头动完美结合，让茵茵的每个反应都栩栩如生。</p>
+    </div>
+    <div class="fc">
+      <span class="ico">👆</span>
+      <h3>全身触控互动</h3>
+      <p>点击头部、脸蛋、胸部、双手、裙摆、双腿等 13 个部位，每个部位有 10 句不同对话，随机触发情绪和动作。每一次点击，都是全新的互动体验。</p>
+    </div>
+    <div class="fc">
+      <span class="ico">🤖</span>
+      <h3>AI 智能对话</h3>
+      <p>支持接入 DeepSeek、OpenAI 等大模型。茵茵能记住你们聊过的内容，理解上下文，像真正的朋友一样和你聊天。还可通过语音直接交流。</p>
+    </div>
+    <div class="fc">
+      <span class="ico">🎤</span>
+      <h3>离线语音识别</h3>
+      <p>内置 Vosk 离线语音识别引擎，不联网也能语音互动。说话就能叫醒茵茵，解放双手，让陪伴更自然。</p>
+    </div>
+    <div class="fc">
+      <span class="ico">⏰</span>
+      <h3>时间感知问候</h3>
+      <p>茵茵能感知你离开桌面的时长。短暂离开她会小小抱怨，久别重逢她会开心撒娇。8 个时长阶段 × 8 句不同问候，句句贴心。</p>
+    </div>
+    <div class="fc">
+      <span class="ico">🖥️</span>
+      <h3>轻量 · 常驻 · 不打扰</h3>
+      <p>基于 Electron 构建，资源占用低。支持拖拽随意摆放、置顶显示。她就在桌面角落安安静静陪着你，需要时给你温暖回应。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 互动展示 -->
+<section id="interact">
+  <div class="sh">
+    <div class="st">INTERACTION</div>
+    <h2 class="st2">和茵茵的日常</h2>
+    <p class="st3">不止是宠物，更像住在一起的朋友</p>
+  </div>
+  <div class="ig">
+    <ul class="il">
+      <li>点击头部 — 轻轻抚摸，让她开心或害羞</li>
+      <li>点击脸蛋 — 她会对你做出可爱反应</li>
+      <li>点击身体 — 触发害羞或惊讶的情绪</li>
+      <li>点击双手 — 握握手，传递温暖</li>
+      <li>点击裙摆 — 她会害羞地躲闪</li>
+      <li>点击双腿 — 轻松有趣的互动</li>
+      <li>右键菜单 — 手动选择任意情绪动作</li>
+      <li>语音对话 — 直接说话与她交流</li>
+      <li>聊天窗口 — 打开对话框深入谈心</li>
+      <li>拖拽移动 — 随意放在桌面任意位置</li>
+    </ul>
+    <div class="id">
+      <div><span class="av"><img src="yinyin.png?v=2" alt="茵茵"></span><span class="nm">茵茵</span></div>
+      <div class="bb">主人~你终于回来啦！茵茵等你好久了呢……（开心地握拳摇晃）</div>
+      <div class="bb" style="border-radius:14px 14px 4px 14px;background:var(--pk);color:#fff;text-align:right">今天辛苦啦，有茵茵陪着你哦～</div>
+      <div class="nt">每个部位触发随机情绪 + 随机动作 + 随机对话，每次互动都独一无二</div>
+    </div>
+  </div>
+</section>
+
+<!-- 情绪标签 -->
+<section id="emotions">
+  <div class="sh">
+    <div class="st">EMOTIONS</div>
+    <h2 class="st2">六种情绪 · 百变表情</h2>
+    <p class="st3">每个情绪都有一套完整的动作库</p>
+  </div>
+  <div class="etg">
+    <span class="et et1">😊 开心 — 20种</span>
+    <span class="et et2">😠 生气 — 20种</span>
+    <span class="et et3">😢 悲伤 — 20种</span>
+    <span class="et et4">🤔 疑问 — 20种</span>
+    <span class="et et5">😲 惊讶 — 20种</span>
+    <span class="et et6">🥺 害羞 — 20种</span>
+  </div>
+</section>
+
+<!-- 下载 -->
+<section id="dl">
+  <h2 class="dl-t">把茵茵带回家 🏠</h2>
+  <p class="dl-d">免费 · 一键安装 · 即刻开启桌面陪伴之旅</p>
+  <a href="https://pan.quark.cn/s/bd6c1d2ffe25" class="btn btn-ww" id="dlLink" target="_blank" rel="noopener">⬇ 下载 Windows 版</a>
+  <p class="dl-note">支持 Windows 系统 · 基于 Electron + Live2D Cubism 4 技术构建</p>
+</section>
+
+<!-- 页脚 -->
+<footer>
+  <p>Made with <h>♥</h> by Soul Desktop Pet Project  © 2026</p>
+</footer>
+
+<script>
+// 导航滚动效果
+window.addEventListener('scroll',()=>{
+  document.getElementById('nv').classList.toggle('s',window.scrollY>40);
+});
+
+// 平滑滚动
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',function(e){
+    e.preventDefault();
+    const t=document.querySelector(this.getAttribute('href'));
+    if(t)t.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+</script>
+</body>
+</html>
